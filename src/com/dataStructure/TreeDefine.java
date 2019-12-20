@@ -46,3 +46,4 @@ class BinaryTree<T>{
 // 同时B=N1+2*N2 , 得出N = N1+2*N2+1, 同时节点数N=N0+N1+N2,
 
 
+
