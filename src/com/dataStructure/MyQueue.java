@@ -202,6 +202,6 @@ class MyDequeue<T>{
             System.out.printf("");
             return null;
         }
-
+        return null;
     }
 }

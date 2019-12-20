@@ -15,4 +15,7 @@ public class MultipleLinkedList<T> {
         Node<T> son;
         Node<T> next;
     }
+
+
+
 }
