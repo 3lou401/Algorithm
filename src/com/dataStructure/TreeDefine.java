@@ -1,9 +1,8 @@
 package com.dataStructure;
 
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-import javax.xml.soap.Node;
+import com.sun.org.apache.bcel.internal.generic.FDIV;
+
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * @Author: leaderHoo
@@ -17,7 +16,8 @@ public class TreeDefine {
 
 //树的定义 ： 是n（n>=0）个节点组成的集合，n=0时是空树 ，
 // 这个集合的特点： 1.有一个称为"树根"的节点； 2.其他节点分为m个"不相交"的子集, 每个子集又是一棵树
-// 树可以表示为一个二元组  Tree =(root,forest),root是根节点，forest是各个子树构
+//树可以表示为一个二元组  Tree =(root,forest),root是根节点，forest是各个子树构
+//是一种递归的定义形式
 abstract  class Tree<T>{
     T root;
     Tree son1,son2,son3; //....可能会更多
@@ -25,17 +25,15 @@ abstract  class Tree<T>{
 
 
 
-
-
 // 树的概念 ：
 //1. 节点的度 ： 节点的子树个数
 //2. 节点的层：根节点是一层，其他节点层是其父节点层+1
-//3. 树的深度： 节点的最大层数就是树的深度， 举例，只有根节点，深度为1，右儿子 深度+1
-//4. 树的高度： 和深度类似，不同在于自底向上，叶子节点高度是1，父亲是儿子的高度最大值+1
+//3. 树的深度： 根节点深度为1，儿子深度 = 父节点深度 +1
+//4. 树的高度： 叶子节点高度是1，父亲节点高度 = 儿子的高度最大值+1
 
 
-// 二叉树 ： 父亲最多拥有左右两棵子树，这里具体一下，
-// Node表示节点，BTree从根节点入手（root），通过root可达任意节点
+// 二叉树 ：每个节点最多拥有两个儿子
+// 代码表示 ： 可以用Node root表示一棵树，其他节点可以通过root到达
 abstract  class BTree<T>{
     private class Node<T>{
         Node<T> left,right;
@@ -43,17 +41,23 @@ abstract  class BTree<T>{
     }
     Node<T> root; //根节点
 }
-// 二叉树概念
-//1. N个节点二叉树，最坏深度是O(N)-斜二叉树,最佳深度是O(logN)-满二叉树或完美二叉树 平均深度是O（sqrt(N)）
+// 二叉树中分类
+//1. 普通二叉树
+// 斜二叉树（最坏情况）
 //2. 完全二叉树，叶子节点只可能出现在最下层和次下层
 //3. 完美二叉树 ， 也就是满二叉树，没有空的节点
 
 //二叉树性质
+// N个节点二叉树，最坏深度是O(N)-斜二叉树,最佳深度是O(logN)-满二叉树或完美二叉树 平均深度是O（sqrt(N)）
 //1. 第i层的节点数，最多是2^{i-1}
-//2. 深度为k的二叉树，最多有2^k -1个节点 ，同理n个节点的二叉树深度是logN+1
+//2. 深度为k的二叉树，最多有2^k -1个节点 ，同理n个节点的二叉树深度是log(N+1)
 //3. 设N0表示度为0的节点个数，N2表示度为2的节点个数， N0= N2 + 1 (叶子节点个数之和 = 有两个儿子节点个数之和+1)
 //证明 总结点数设为N,边数设为B ,则 B = N -1 ,
-// 同时B=N1+2*N2 , 得出N = N1+2*N2+1, 同时节点数N=N0+N1+N2,
+// 同时B=N1+2*N2 , 得出N = N1+2*N2+1, 同时节点数N=N0+N1+N2
+
+
+//普通二叉树的操作
+//TODO 遍历都没有考虑非空
 class BinaryTree<T> {
      class Node<T>{
         public Node(Node left, Node right, T value) {
@@ -65,13 +69,13 @@ class BinaryTree<T> {
         public Node() {
         }
 
-        Node<T> left, right; T value; }
+        Node<T> left, right; T value;
+     }
 
         Node<T> root;
 
       /**
-       * 根据层序数组生成二叉树
-        * @param [datas] 是按照层序组织的树的所有数据 ； 利用队列
+       * 根据层序数组生成二叉树 : 注意， 空的地方需要指定为null
         * @desc        // 1. 先取出一个树，作为根，入队列
        *             // 2. 创建一个队列 ； 只要队列不为空就循环，循环体内，弹出当前节点（要对其增加左右儿子），
        *             按照（左右）顺序，数组中有数据，新建一个节点入队列
@@ -112,7 +116,7 @@ class BinaryTree<T> {
          *先序生成二叉树
          * @createTime 2019/12/20 20:20
          * @param
-         * @desc 数据是输入的, 判断输入数据
+         * @desc 数据是输入的, 根据输入条件结束
          */
         public   Node<Integer> create(Node<Integer> node) {
             Scanner in = new Scanner(System.in);
@@ -132,7 +136,6 @@ class BinaryTree<T> {
         }
         /**
          * 求二叉树的高度: 递归求
-         * @param [node]
          * @return int
          */
         public int height(Node<T> node){
@@ -145,7 +148,6 @@ class BinaryTree<T> {
         }
         /**
          *打印叶子节点
-         * @param [node]
          * @desc  采用先序遍历方式，不同的是，加上了条件
          */
         public void printleafNode(Node<T> node){
@@ -158,7 +160,6 @@ class BinaryTree<T> {
          }
          /**
           * 层序遍历
-          * @param [root]
           * @desc
           */
          public void layerTraversal(Node<T> root){
@@ -208,8 +209,8 @@ class BinaryTree<T> {
          public void backOrderTraversal(Node<T> bt){
              if (bt != null){
                  backOrderTraversal(bt.left);
-                 System.out.printf("-"+bt.value);
                  backOrderTraversal(bt.right);
+                 System.out.printf("-"+bt.value);
              }
          }
          //三种非递归遍历
@@ -265,10 +266,7 @@ class BinaryTree<T> {
         Deque<Node> stack = new LinkedList<>();
         //新建一个list，记录结点的状态是否已经被访问过
         ArrayList<Node> list = new ArrayList<>();
-//		stack.push(root);
-        Node proot;
         Node node = root;
-        int flag;
         //首先检查完树的左子树，再右子树，最后将根节点输出
         while (node != null || stack.size() > 0) {
             //将最左子树添加完毕
@@ -279,16 +277,20 @@ class BinaryTree<T> {
             //和中序遍历相似，为先输出左结点，但是做结点输出完毕之后，不能直接将根结点弹出，而是必须先将右结点弹出，
             //最后再将根结点弹出来，就会牵扯到一个根结点的访问状态的问题，是否已经被遍历过了
             //利用一个list集合记录已将被遍历过的根结点，防止产生死循环
+
+            // 个人理解， 后序输出需要左右根，1.将最左子树添加之后，相当于左处理完成，接下来处理右子树 。
+            // 2. 处理右子树时，peek不弹出，判断这个节点是否有右儿子，没有的话，相当于右边也处理了，直接弹出打印即可；
+            //  有的话先放到列表中，node继续往右，处理右边的节点
             if (stack.size() > 0) {
                 Node peek = stack.peek();
                 if (peek.right != null) {
                     boolean con = list.contains(peek);
                     if (con == true) {
                         Node pop = stack.pop();
-                        System.out.print(pop.value + "  ");
+                        System.out.print(pop.value + "  "); //TODO 空值不打印
                     } else {
                         list.add(peek);
-                        node = peek.right;
+                        node = peek.right; // 只有节点的右子树不是空，并且是首次，才会修改node指向
                     }
                 } else {
                     Node pop = stack.pop();
@@ -296,6 +298,15 @@ class BinaryTree<T> {
                 }
             }
         }
+    }
+
+    public static void main(String[] args) {
+        BinaryTree<Integer> bt = new BinaryTree<>();
+        Integer[] a = {1,3,4,5,6,7,null,null,null,8,9,null,10};
+        bt.root = bt.createTreeByLayerSequen(a);
+        System.out.printf("树已经创建成功");
+//        bt.preOrderTraversal(bt.root);
+        bt.postTraByStack();
     }
 }
 
@@ -448,7 +459,7 @@ class BinarySearchTree<T extends  Comparable<T>> extends BinaryTree<T>{
             //找到了要删除的元素，需要进行删除操作
             if (bst.left != null && bst.right != null){
                 //两个儿子，找到右儿子的最小值做父亲，同时删除右儿子
-                Node<T> newN = findMax(bst.right);
+                Node<T> newN = findMin(bst.right);
                 bst.value = newN.value; // 注意是拿右儿子的值，不要直接赋值对象引用
                 bst.right = delete(bst.right,newN.value); //删除这个
             }else {
@@ -487,9 +498,158 @@ class BinarySearchTree<T extends  Comparable<T>> extends BinaryTree<T>{
 //1. LL和RR 做一次单旋即可 ，插入节点在左子树的左儿子 （LL）导致的; 在右子树的右儿子上（RR）导致的
 //2. LR型 ：插入节点在左子树的右儿子（LR）; 或者右子树的左儿子上（RL）
 
-class BinaryBalanceTree<T extends Comparable<T>> extends BinarySearchTree<T>{
+class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T>{
+    //AVL树的节点需要附加平衡信息
+    class Node<T> {
+        T value;
+        Node<T> left,right;
+        int height;
 
+        public Node() {
+        }
+
+        public Node(T value, Node<T> left, Node<T> right, int height) {
+            this.value = value;
+            this.left = left;
+            this.right = right;
+            this.height = height;
+        }
+    }
+
+    Node<T> root;
+
+    public Node<T> insert(Node<T> t,T val){
+        if (t == null)
+            return   new Node<>(val,null,null,1);
+        int cmp = val.compareTo(t.value);
+        if (cmp == 0){
+            //do nothing
+        }else if (cmp > 0){
+            // insert right;
+            t.right = insert(t.right,val);
+            //判断是否还平衡
+            if (getHeight(t.right) - getHeight(t.left) == 2 ){
+                 //判断是RR型还是RL型
+                if (val.compareTo(t.right.value) > 0){
+                   t =  singleRightRoute(t);
+                }else {
+                   t =  doubleRightLeftRoute(t);
+                }
+            }
+        }else if (cmp < 0){
+            //insert left
+            t.left = insert(t.left,val);
+            //判断是否平衡
+            if (getHeight(t.left) - getHeight(t.right) == 2){
+                //判断是LL还是LR
+                if (val.compareTo(t.left.value) < 0){
+                    t = singleLeftRoute(t);
+                }else {
+                    t = doubleLeftRightRoute(t);
+                }
+            }
+        }
+        //每次插入都需更新高度
+        t.height = Math.max(getHeight(t.left),getHeight(t.right))+1;
+        return t;
+    }
+
+
+//    删除： 类似于二叉查找树的删除，只不过在每个节点删除操作之后，判断是否影响平衡，做对应旋转
+    public Node<T> deleteNode(Node<T> node,T val){
+        if (node == null)
+            return null;
+        int cmp = val.compareTo(node.value);
+        if (cmp > 0){
+            //动态查询（就是删除）右子树
+            node.right = deleteNode(node.right,val);
+        }else if (cmp < 0){
+            //delete left
+            node.left = deleteNode(node.left,val);
+        }else {
+            //找到要删除元素
+            if (node.left != null && node.right != null){
+                Node minR = findMin(node.right);
+                node.value =(T) minR.value;
+                node.right = deleteNode(node.right,node.value);
+            }else {
+               //只有一个孩子或者没有
+                node = (node.left != null) ? node.left : node.right;
+            }
+        }
+        //修改高度
+        node.height = Math.max(getHeight(node.left),getHeight(node.right))+1;
+        //平衡旋转 : 利用平衡因子判断
+        int bf = getBalanceFactor(node);
+        if (bf > 1 ){
+            //左儿子深度大，导致不平衡条件，可能是LL、LR
+            if (getBalanceFactor(node.left)  >= 0){
+                //LL
+                node = singleLeftRoute(node);
+            }else{
+                //LR
+                node = doubleLeftRightRoute(node);
+            }
+        }else if (bf < -1){
+            //右儿子深度大，可能是RR、RL
+            if (getBalanceFactor(node.right) <= 0){
+                //RR
+                node = singleRightRoute(node);
+            }else {
+                //RL
+                node = doubleRightLeftRoute(node);
+            }
+        }
+        return node;
+    }
+   private int getBalanceFactor(Node<T> node){
+        if (node == null)
+            return 0;
+        return getHeight(node.left) - getHeight(node.right);
+   }
+
+
+    Node<T> findMin(Node<T> bst){
+        if (bst == null)
+            return null;
+        if (bst.left == null)
+            return bst;
+        else
+            return findMin(bst.left);
+    }
+
+    //左单旋 ： 就是把A旋转为A.left的右子树  B= A.left; A.left =B.right; B.right = A;
+    private Node<T> singleLeftRoute(Node<T> A) {
+        Node<T> B = A.left;
+        A.left = B.right;
+        B.right = A;
+        A.height = Math.max(A.left.height,A.right.height) +1 ; //从底下网上计算高度
+        B.height =  Math.max(B.left.height,A.height) +1 ; //从底下网上计算高度
+        return B;
+    }
+    //右单旋 ： 把A旋转到A.right的左子树 ： B =A.right; A.right = B.left; B.left = A;
+    private Node<T> singleRightRoute(Node<T> A) {
+        Node<T> B = A.right;
+        A.right = B.left;
+        B.left = A;
+        A.height = Math.max(A.left.height,A.right.height) +1 ;
+        B.height =  Math.max(A.height,B.right.height) +1 ;
+        return B;
+    }
+    private Node<T> doubleRightLeftRoute(Node<T> A) {
+        A.right = singleRightRoute(A.right);
+        return singleLeftRoute(A);
+    }
+    private Node<T> doubleLeftRightRoute(Node<T> A) {
+        A.left = singleLeftRoute(A.left);
+        return singleRightRoute(A);
+    }
+
+    private int  getHeight(Node<T> right) {
+        return right.height;
+    }
 }
+
 
 
 
