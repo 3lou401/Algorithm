@@ -637,12 +637,13 @@ class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T>{
         return B;
     }
     private Node<T> doubleRightLeftRoute(Node<T> A) {
-        A.right = singleRightRoute(A.right);
-        return singleLeftRoute(A);
+        A.right = singleLeftRoute(A.right);
+        return singleRightRoute(                                                                A);
     }
+    //左右双旋 - 先对当前节点的的左子树做右旋 ，在对当前节点做左旋
     private Node<T> doubleLeftRightRoute(Node<T> A) {
-        A.left = singleLeftRoute(A.left);
-        return singleRightRoute(A);
+        A.left = singleRightRoute(A.left);
+        return singleLeftRoute(A);
     }
 
     private int  getHeight(Node<T> right) {
