@@ -157,7 +157,8 @@ class StringHash{
 
 }
 
-//处理冲突的方式
+
+//处理冲突的方式 : 代码都是伪码的形式
 class SolveConflict{
     //方法一 ：开放定址法 （Open Addressing）
     //思想是 ：一旦冲突了，就去寻找下一个空的散列地址
@@ -222,5 +223,26 @@ class SolveConflict{
     //方法二 ：链地址法(Linear Probing)
     private class  LinearProbing{
 
+    }
+}
+
+
+//1. 开放定址法的代码 ,
+class OpenAddrUseCase{
+    //数据结构
+    public static final  int MaxTableSize = 10000;
+
+    //元素类型
+    private  enum IndexType{
+        Legitimate, Empty, Deleted
+    }
+
+    private class Element{
+        IndexType type;
+        int  element; //保存的元素，目前先是Int类型
+    }
+    private class SysTable{
+        Element[] sysTables; //散列表类型
+        int TableSize;// 散列表大小
     }
 }
