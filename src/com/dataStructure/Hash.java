@@ -170,7 +170,7 @@ class SolveConflict{
         // 当我们往散列表中插入数据时，如果某个数据经过散列函数之后，存储的位置已经被占用了，
         // 我们就从当前位置开始，依次往后查找（到底后从头开始），看是否有空闲位置，直到找到为止
         // 如下伪码 ： key是关键字， result是关键字散列之后保存的数组
-         public void hash1(String[] key, String[] result){
+         public void solveInsert1(String[] key, String[] result){
              int count = 1;
              for(int i= 0; i < key.length;i++){
                  int hashVal = h1(key[i]);
@@ -194,7 +194,7 @@ class SolveConflict{
 
         // 2 . 平方探测法 : di选择 正负i^2， 即增量序列以 1^2， -1^2， 2^2 ，-2^2 ...
         //相比于线性探测，步长变为以前的平方
-        public void hash2(String[] key, String [] result){
+        public void solveInsert2(String[] key, String [] result){
             int count = 1;
             int flag = 1; //判断递增因子是正负的
             for(int i= 0; i < key.length;i++){
@@ -215,8 +215,12 @@ class SolveConflict{
         // 就需要按照增量序列计算地址，去判断， 一直到找到未插入元素节点
         // 删除的时候，假删除
         // 解决了“一次聚集”，但是hash(key)相同的元素，还是会聚集到一起，叫做“二次聚集”
+        //算是 常用的方法
 
         // 3. 双散列探测法
+        public void solveInsert3(String[] key, String [] result){
+
+        }
         // 4. 再散列法
     }
 
