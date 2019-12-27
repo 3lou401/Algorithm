@@ -1,7 +1,5 @@
 package com.dataStructure;
 
-import com.sun.org.apache.bcel.internal.generic.FDIV;
-
 import java.util.*;
 
 /**
@@ -10,17 +8,17 @@ import java.util.*;
  * @desc:
  */
 public class TreeDefine {
-    //当数据具有有序性，基于线性表的二叉查找算法复杂度O(logN) ,当数据没有有序性时
+    //当数据具有有序性，基于线性表的二叉查找算法复杂度O(logN) ,
+    // 当数据没有有序性时，查找时间复杂度是O(N)
 
 }
 
 //树的定义 ： 是n（n>=0）个节点组成的集合，n=0时是空树 ，
 // 这个集合的特点： 1.有一个称为"树根"的节点； 2.其他节点分为m个"不相交"的子集, 每个子集又是一棵树
 //树可以表示为一个二元组  Tree =(root,forest),root是根节点，forest是各个子树构
-//是一种递归的定义形式
 abstract  class Tree<T>{
-    T root;
-    Tree son1,son2,son3; //....可能会更多
+    T root;         //根节点
+    Tree son1,son2,son3; // n个不想交的子集，每个子集也是 树
 }
 
 
@@ -651,6 +649,40 @@ class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T>{
     }
 }
 
+
+
+// 求公共祖先
+// 顺序存储的二叉树， 求下标i 和j的公共祖先问题
+class SameAncestors{
+    private  class BinaryTree{
+        int[] datas;
+        int size;
+        int capacity;
+    }
+    public void printSameAncestors(BinaryTree bt, int i, int j){
+
+        while (i  > 0 && j > 0){
+            if (bt.datas[i] == 0 ){
+                System.out.printf("i的父亲为空！");
+                return;
+            }
+            if (bt.datas[j] == 0 ){
+                System.out.printf("j的父亲为空！");
+                return;
+            }
+
+            if (i == j){
+                System.out.printf("公共祖先是-"+i);
+                return;
+            }else if (i > j){
+                i/=2;
+            }else {
+                j/=2;
+            }
+        }
+
+    }
+}
 
 
 
