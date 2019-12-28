@@ -1,7 +1,8 @@
 package com.dataStructure;
 
-import sun.awt.Symbol;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.security.Permission;
 
 /**
  * @Author: leaderHoo
@@ -41,7 +42,7 @@ abstract  class SymbolTable<K,V>{
 
 // 使用哈希技术创建的 “符号表” 就是 “哈希表”
 // 散列（Hashing）技术
-// 将关键字，通过函数（哈希函数），计算出一个值作为实际存储的内存地址 ，又称作“关键字-地址转换法”
+// 将关键字作为参数，通过函数（哈希函数），计算出一个值作为实际存储的内存地址 ，又称作“关键字-地址转换法”
 
 // 例子一 ： 整数集合 18 23 27 21 15 ... (11个整数) ，如果符号表大小TableSize选择17， 哈希函数选择
 // hash(k) = k mod TableSize ;  可以直接将11个整数保存到哈希表中
@@ -51,13 +52,13 @@ abstract  class SymbolTable<K,V>{
 // 后边的几种散列方法，会分析装填因子，一般装填因子在0.5-0.8合适
 
 // 冲突：
-// 经过散列函数变换后，两个不同的key,被散列到同一个存储空间， 就是冲突
-// 映射到同一地址的，称为“同义词”
+// 经过散列函数变换后，两个不同的key,被散列到同一个存储空间，即 key1 !=key2 && hash(key1) == hash(key2) 就是冲突
+// 映射到同一地址的关键字，称为“同义词”
 
-// 例子二 ： 10个英文词，散列到一个表中， acos、define、float、exp、char、atan、
-// ceil、floor、clock、ctime
+// 例子二 ： 10个英文词，散列到一个表中， acos、define、float、exp、char、atan、ceil、floor、clock、ctime
 // 根据关键字均为小写字母 ，可用二维数组 Table[26][2]保存，散列函数设计为 h(key) = key[0] - 'a'
-// 如果发生冲突，保存到 table[h(key)][1]，如果再有，那就无法保存这个关键字
+// 如果第一次发生冲突，保存到 table[h(key)][1]，如果再有，那就无法保存这个关键字
+
 //这种，在同一个散列地址，定义多个槽（slot）的方式的确可以解决部分冲突。
 //但在本例中，实际上clock、ctime无法保存了，实际上的 “装填因子”只有  8/(26*2) ,很低
 // 这种方式很差
@@ -162,18 +163,19 @@ class StringHash{
 class SolveConflict{
     //方法一 ：开放定址法 （Open Addressing）
     //思想是 ：一旦冲突了，就去寻找下一个空的散列地址
-    //h(key) =( h(key) + di) mod TableSize;
-    // 根据di取值不同，又可以分为
+    // 发生第i次冲突之后， h(key) =( h(key) + di) mod TableSize ， 必须对TableSize取余
+    // 开放定址法 ： 要求，删除做到假删除
     private class  OpenAddressing{
         int TableSize;
-        // 1. 线性探测法 : di 选择i
-        // 当我们往散列表中插入数据时，如果某个数据经过散列函数之后，存储的位置已经被占用了，
-        // 我们就从当前位置开始，依次往后查找（到底后从头开始），看是否有空闲位置，直到找到为止
+        // 1. 线性探测法 : di 选择i ， 即增量序列是1,2,3,4,5...(TableSize - 1)来试探下一个存储地址
+        // 插入时，要找到一个空位置或者直到散列表已满 。 查找时，通过散列函数计算出位置，比较关键字，不是就按照步长往下找，直到找到或者为空。
+        //为了保证查找正确，删除需要假删除
         // 如下伪码 ： key是关键字， result是关键字散列之后保存的数组
          public void solveInsert1(String[] key, String[] result){
              int count = 1;
              for(int i= 0; i < key.length;i++){
                  int hashVal = h1(key[i]);
+                 //TODO 初步思想
                  while (result[hashVal] != null){
                      hashVal = (h1(key[i])+ count) % TableSize;
                      count++;
@@ -187,46 +189,35 @@ class SolveConflict{
          private int h1(String k){
              throw  new NotImplementedException();
          }
-         //查找的时候，通过散列函数计算出位置，看一下是否相等，不等，需要顺序往下找，一直到空闲位置，没找到就是没有
-         // 为了保证查找到时候，空闲的位置，不是插入，后来又删除的，这里删除可以用假删除，标记
-        // 这种方式缺点很明显，本来散列到i位置的元素，可能因为其位置被占了，只能往后散列，增加查找的复杂度，
-        // 这种情况叫“一次聚集”，就是Hash(key) 不是这个位置的元素，占了这个位置，导致元素聚集
+        // 线性探测法使得i位置的元素被散列到i+1位置，导致很多元素在相邻位置堆积起来，形成一次聚集，大大降低查找效率
+        // “一次聚集”，就是Hash(key) 不是这个位置的元素，占了这个位置，导致元素聚集
 
-        // 2 . 平方探测法 : di选择 正负i^2， 即增量序列以 1^2， -1^2， 2^2 ，-2^2 ...
+
+        // 2 . 平方探测法 : di选择 正负i^2， 即增量序列以 1^2， -1^2， 2^2 ，-2^2 ...q^2 (q <= tableSize/2)
         //相比于线性探测，步长变为以前的平方
-        public void solveInsert2(String[] key, String [] result){
-            int count = 1;
-            int flag = 1; //判断递增因子是正负的
-            for(int i= 0; i < key.length;i++){
-                int hashVal = h1(key[i]);
-                while (result[hashVal] != null){
-                    int value = (int) (flag *Math.pow(count,2));
-                    flag = - flag;
-                    count++;
-                    hashVal = (h1(key[i])+ value) % TableSize;
-                }
-                if (result[hashVal] == null){
-                    count = 0;
-                    result[hashVal] = key[i];
-                }
-            }
-        }
-        //同样的方式，查找的时候，通过散列计算出来位置，元素不是要查找的，
-        // 就需要按照增量序列计算地址，去判断， 一直到找到未插入元素节点
-        // 删除的时候，假删除
+        //类似 线性探测法，插入的时候，也是找一个空位置或者直到散列表已满 ； 查找的时候，也是比较关键字，不是就依据步长往下； 删除也是假删除
         // 解决了“一次聚集”，但是hash(key)相同的元素，还是会聚集到一起，叫做“二次聚集”
         //算是 常用的方法
 
         // 3. 双散列探测法
+        // di选择另一个探测函数 h2(key)
+        // h(key) = (h(key) + i * h2(key)) % TableSize;
+        //递增序列就是 1*h2(key),2*h2(key),3*h2(key),4*h2(key) ，要求第二个递增函数要选择好，如果都是0那就凉凉了
+        //理论上很有吸引力，不过平方探测法不需要第二个探测函数，因为会更常用
         public void solveInsert3(String[] key, String [] result){
 
         }
         // 4. 再散列法
+        // 在一定时间下，表长是固定的，装填因子太大，填入的元素越多，冲突的可能性就越大
+        //当装填因子过大时，可以采取，加倍扩大散列表，将原有的元素散列到新的表中，从而降低装填因子，这个过程叫做“ReHashing”,再散列
+        //这个过程，耗时长，在交互系统中，会有明显停顿，实时系统慎用
     }
 
     //方法二 ：链地址法(Linear Probing)
+    //分离链接法（链接法） Sperator Chaining
+    //核心思想是，将散列到同一个地址的关键字，通过链表连接起来，存储在同一个单链表中
+    // 优势是 删除关键词的操作可以直接实现，分离链表法比开放定址法要更好
     private class  LinearProbing{
-
     }
 }
 
@@ -245,8 +236,162 @@ class OpenAddrUseCase{
         IndexType type;
         int  element; //保存的元素，目前先是Int类型
     }
+
     private class SysTable{
         Element[] sysTables; //散列表类型
         int TableSize;// 散列表大小
+    }
+
+    SysTable sysTable;
+
+    // 返回大于N且小于MaxTableSize最小素数
+    public int nextPrime(int N){
+        int i, p = (N % 2 == 0)? N +1 : N + 2;
+        while (p < MaxTableSize){
+            for (i = (int)Math.sqrt(p);i > 2; i--){
+                if (p % i == 0)
+                    break; //可以整除说明不是素数
+            }
+            if (i == 2) {
+                //说明是正常跳出循环，没有找到整除的
+                break;
+            }else {
+                p +=2;
+            }
+        }
+        return p;
+    }
+
+    public OpenAddrUseCase() {
+    }
+
+    public  OpenAddrUseCase(int tableSize){
+        int primeTableSize = nextPrime(tableSize);
+        sysTable.TableSize = primeTableSize;
+        sysTable.sysTables = new Element[primeTableSize];
+        for (int i = 0; i < primeTableSize;i++){
+            sysTable.sysTables[i].type = IndexType.Empty;
+        }
+    }
+
+    // 平方探测法，查找方法, key暂时还用int类型其他的类型相似
+    int findKey(int key) {
+        int CurrentPos, NewPos;
+        int Cnum = 0;
+        NewPos = CurrentPos = Hash(key);
+        int tableSize = sysTable.TableSize;
+        //元素不是空的，也不是要查找的，就按照步长往下找，步长是±i^2
+        while (sysTable.sysTables[NewPos].type != IndexType.Empty
+                && sysTable.sysTables[NewPos].element != key) {
+            Cnum++;
+            if (Cnum % 2 != 0) {
+                //奇数次，为正, 因为是正负平方，所以增量是 Cnum+1/2
+                // 2/2 ，4/2,6/2  对应 1,2,3..)
+                NewPos = CurrentPos + (int) Math.pow((int) ((Cnum + 1) / 2), 2);
+                NewPos = NewPos % tableSize;
+            } else {
+                //偶数次，为负数 1/2,3/2
+                NewPos = CurrentPos - (int) Math.pow((int) Cnum / 2, 2);
+                if (NewPos < tableSize)
+                    NewPos += tableSize;
+                NewPos %= tableSize;
+            }
+        }
+        // 可以通过这个位置的元素的类型判断
+        return NewPos; // 这是元素的位置，或者是一个空单元的位置，
+    }
+    private int Hash(int key){
+        throw  new NotImplementedException();
+    }
+    // 平方探测法的插入函数
+    public boolean insert(int key){
+        int pos = findKey(key);
+        if (sysTable.sysTables[pos].type != IndexType.Legitimate ){
+            //说明这个元素是没有被占用的，可以进行插入
+            sysTable.sysTables[pos].type = IndexType.Legitimate;
+            sysTable.sysTables[pos].element = key;
+            return true;
+        }else{
+            System.out.printf("该关键字已经存在了");
+            return false;
+        }
+    }
+
+
+}
+
+//2 . 分离链接法的代码
+class SperatorChaining{
+    private class Node{
+        int value;
+        Node next;
+    }
+
+    //散列表
+    private class SysTable2{
+        Node[] tables;
+        int tableSize;
+    }
+    SysTable2 sysTable2;
+
+    public SperatorChaining(int TableSize) {
+        sysTable2.tableSize = TableSize;
+        sysTable2.tables = new Node[TableSize];
+    }
+
+   public  Node find(int key){
+        Node p;
+        int pos;
+        pos = Hash(key);
+        p = sysTable2.tables[pos];
+        while (p != null  && p.value!= key){
+            p = p.next;
+        }
+        return p; //可能是返回的值，也可能是空
+    }
+
+    public boolean insert(int key){
+        Node p,newCell;
+        p = find(key);
+        if (p!= null){
+            System.out.printf("关键字已经存在");
+            return false;
+        }else {
+            //头插法，找到散列的存储位置
+            Node head =sysTable2.tables[ Hash(key)]; //head作为一个空的头指针
+            newCell = new Node();
+            newCell.value = key;
+            newCell.next = head.next;
+            head.next = newCell;
+            return true;
+        }
+    }
+
+    public boolean delete(int key){
+        Node p = find(key);
+        if (p == null)
+            return false;
+        int pos = Hash(key);
+        Node prev,temp;
+        prev = sysTable2.tables[pos];
+        temp = prev.next;
+
+        while (temp!= null && temp.value != key){
+            prev = temp;
+            temp = temp.next;
+        }
+        if (temp!=null){
+            //找到元素了，删除
+            prev.next =temp.next;
+            //GC
+            temp.value=0;
+            temp.next = null;
+            return true;
+        }
+        return false;
+    }
+
+    private  int Hash(int key){
+        throw  new NotImplementedException();
     }
 }
