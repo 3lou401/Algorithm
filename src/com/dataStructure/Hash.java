@@ -11,20 +11,22 @@ import java.security.Permission;
 public class Hash {
 }
 
+//引子：
 //1. 顺序查找：O(N), 二分查找 ： O(logN)
-// 二分查找 要求数据有序，并且不会经常变动（静态查找）
-//N很大时，并且经常插入删除时，二叉搜索树查找O(h) h是二叉搜索树高度，最好O(logN)、最坏O(N)
+// 二分查找 要求 数据有序 && 不会经常变动 ，适合静态查找
+// 二叉搜索树查找 ： O(h) ，h是二叉搜索树高度，最好O(logN)、最坏O(N)，适合动态查找
 
 //2. 其他适应性广，而且速度快的查询方法 ？
 //情景1 ：在十几亿QQ号中，查找一个QQ号，
-//分析：如果用二分查找 十几亿QQ号，可能需要1G的存储，目前可以满足，但是频繁插入无法满足
+//分析：如果用二分查找 十几亿QQ号，可能需要1G的存储，目前可以满足，但是QQ号会频繁的插入
 
 //情景2 ： 查字典，比如查询zoo, 我们可以大约直接翻到，
-//我们就是先估算 关键字的大体位置
+// 分析 ： 我们就是先估算 关键字的大体位置,然后直接定位
 
 
-//3. 举例， 百度或者谷歌搜索的时候，使用倒排索引，关键字对应文档，（正常的索引是  文档对应关键字）
-//如果 关键字M ： 3:1,2,3 说明关键字m在这个文档中出现3次，分别是第一行，第二行，第3行
+//情景3 ： 使用百度或者谷歌搜索，可以根据关键字查找多个文档（html文档）
+// 分析 ： 是使用了倒排索引，用关键字对应文档
+//"倒排索引" 如 关键字M - 文档1 3:1,2,3 说明关键字m在这个文档中出现3次，分别是第一行，第二行，第3行
 
 
 //符号表
@@ -44,15 +46,18 @@ abstract  class SymbolTable<K,V>{
 // 散列（Hashing）技术
 // 将关键字作为参数，通过函数（哈希函数），计算出一个值作为实际存储的内存地址 ，又称作“关键字-地址转换法”
 
-// 例子一 ： 整数集合 18 23 27 21 15 ... (11个整数) ，如果符号表大小TableSize选择17， 哈希函数选择
+// 例子一 ： 整数集合 18 23 27 21 15 ... (11个整数) ，符号表大小TableSize选择17， 哈希函数选择
 // hash(k) = k mod TableSize ;  可以直接将11个整数保存到哈希表中
-//插入 ： 计算出地址，保存，O(1)  查找 ：计算出地址，查看是否存在，O(1)
+//优势 ： 插入，查找和表大小无关，直接根据函数计算出地址，进行取值和赋值
 
-// 一般情况下 ， 设散列表大小m, 保存的关键字个数是n , 则称 α = n/m 为  “装填因子”（Loading Factor）
-// 后边的几种散列方法，会分析装填因子，一般装填因子在0.5-0.8合适
+
+//“装填因子”（Loading Factor）
+// 设散列表大小m, 保存的关键字个数是n , 则称 α = n/m 为装填因子
+// 用来分析选择的hash技术的优劣势， 最好是 0.5<α<0.8 ， 太小，浪费空间 ，太大容易冲突
 
 // 冲突：
-// 经过散列函数变换后，两个不同的key,被散列到同一个存储空间，即 key1 !=key2 && hash(key1) == hash(key2) 就是冲突
+// 经过散列函数变换后，两个不同的key,被散列到同一个存储空间，
+// 即 key1 !=key2 && hash(key1) == hash(key2) 就是冲突
 // 映射到同一地址的关键字，称为“同义词”
 
 // 例子二 ： 10个英文词，散列到一个表中， acos、define、float、exp、char、atan、ceil、floor、clock、ctime
@@ -71,7 +76,7 @@ abstract  class SymbolTable<K,V>{
 //1.计算简单
 //2. 关键字对应散列空间均匀，减少冲突
 
-//关键字为数字的散列函数选择：
+//关键字为数字的散列函数选择：一般常用取余和数字分析（手机号、身份证号等）
 class NumberHash{
     int a,b;
     //1.直接定值法 ：如下，a,b都是常数，
@@ -84,10 +89,10 @@ class NumberHash{
     }
 
 
-    //方法二 ： 除留余数法（取余，mod运算）
-    // 设散列表长度为TableSize(TableSize选取与集合关键字大小、装填因子有关)
-    // 一般 p <= TableSize && p ∈ 素数 ，会好一点
-    //比较常用  h(key) = key mod p;
+    //方法二 ： 取余  比较常用
+    // 设计散列表时， 长度为TableSize(TableSize选取与集合关键字大小、装填因子有关)
+    // 选择除数时， p <= TableSize && p ∈ 素数 ，相对较好
+    //函数  h(key) = key mod p;
     public int fun2(int p,int key){
         return key % p ;
     }
@@ -108,7 +113,7 @@ class NumberHash{
     }
 }
 
-//关键字为字符串的散列函数选择
+//关键字为字符串的散列函数选择，常用 每一位ASIC码*32之和，
 class StringHash{
     // 方法一 ;ASIC码加和法 h(key) = sum(c1,c2,c3...) % TableSize c1,c2,c3是字符串中的每一个字符
     // 函数很简单，但均匀性很差， 比如 eat ate tea  , 或者 a3,b2,c1 都会散列到同一个地址
@@ -163,46 +168,29 @@ class StringHash{
 class SolveConflict{
     //方法一 ：开放定址法 （Open Addressing）
     //思想是 ：一旦冲突了，就去寻找下一个空的散列地址
-    // 发生第i次冲突之后， h(key) =( h(key) + di) mod TableSize ， 必须对TableSize取余
-    // 开放定址法 ： 要求，删除做到假删除
+    // 发生第i次冲突之后， h(key) =( h(key) + di) mod TableSize ， 必须对TableSize   取余
+    // 开放定址法 ： 要求，删除做到假删除 ， 比较常用的也就平方探测法
     private class  OpenAddressing{
         int TableSize;
-        // 1. 线性探测法 : di 选择i ， 即增量序列是1,2,3,4,5...(TableSize - 1)来试探下一个存储地址
-        // 插入时，要找到一个空位置或者直到散列表已满 。 查找时，通过散列函数计算出位置，比较关键字，不是就按照步长往下找，直到找到或者为空。
-        //为了保证查找正确，删除需要假删除
-        // 如下伪码 ： key是关键字， result是关键字散列之后保存的数组
-         public void solveInsert1(String[] key, String[] result){
-             int count = 1;
-             for(int i= 0; i < key.length;i++){
-                 int hashVal = h1(key[i]);
-                 //TODO 初步思想
-                 while (result[hashVal] != null){
-                     hashVal = (h1(key[i])+ count) % TableSize;
-                     count++;
-                 }
-                 if (result[hashVal] == null){
-                     count = 0;
-                     result[hashVal] = key[i];
-                 }
-             }
-         }
-         private int h1(String k){
-             throw  new NotImplementedException();
-         }
+        // 1. 线性探测法 :  增量序列是1,2,3,4,5...(TableSize - 1) 来试探下一个存储地址
+        // 插入时，要找到一个空位置或者直到散列表已满 。
+        // 查找时，通过散列函数计算出位置，比较关键字，不是就按照步长往下找，直到找到或者为空。
+         //删除 ，需要假删除
         // 线性探测法使得i位置的元素被散列到i+1位置，导致很多元素在相邻位置堆积起来，形成一次聚集，大大降低查找效率
         // “一次聚集”，就是Hash(key) 不是这个位置的元素，占了这个位置，导致元素聚集
 
 
-        // 2 . 平方探测法 : di选择 正负i^2， 即增量序列以 1^2， -1^2， 2^2 ，-2^2 ...q^2 (q <= tableSize/2)
+        // 2. 平方探测法 : di 选择 正负i^2， 即增量序列以 1^2， -1^2， 2^2 ，-2^2 ...q^2 (q <= tableSize/2)
         //相比于线性探测，步长变为以前的平方
-        //类似 线性探测法，插入的时候，也是找一个空位置或者直到散列表已满 ； 查找的时候，也是比较关键字，不是就依据步长往下； 删除也是假删除
+        //类似 线性探测法，插入的时候，也是找一个空位置或者直到散列表已满 ；
+        // 查找的时候，也是比较关键字，不是就依据步长往下；
+        // 删除也是假删除
         // 解决了“一次聚集”，但是hash(key)相同的元素，还是会聚集到一起，叫做“二次聚集”
-        //算是 常用的方法
 
         // 3. 双散列探测法
         // di选择另一个探测函数 h2(key)
         // h(key) = (h(key) + i * h2(key)) % TableSize;
-        //递增序列就是 1*h2(key),2*h2(key),3*h2(key),4*h2(key) ，要求第二个递增函数要选择好，如果都是0那就凉凉了
+        //递增序列就是 1*h2(key),2*h2(key),3*h2(key),4*h2(key) ，要求第二个递增函数要选择好
         //理论上很有吸引力，不过平方探测法不需要第二个探测函数，因为会更常用
         public void solveInsert3(String[] key, String [] result){
 
@@ -247,6 +235,7 @@ class OpenAddrUseCase{
     // 返回大于N且小于MaxTableSize最小素数
     public int nextPrime(int N){
         int i, p = (N % 2 == 0)? N +1 : N + 2;
+        // 找到比N大的质数，i从根号p，到2，看是否被p整除，都没有就是素数
         while (p < MaxTableSize){
             for (i = (int)Math.sqrt(p);i > 2; i--){
                 if (p % i == 0)
@@ -274,7 +263,10 @@ class OpenAddrUseCase{
         }
     }
 
-    // 平方探测法，查找方法, key暂时还用int类型其他的类型相似
+    // 平方探测法，查找方法, key暂时还用int类型，其他的类型相似
+    // hash找到初始散列位置，循环只要key不相等，不为空，就按步长往下找 ，
+    // 步长设计，分奇偶，奇数为正，步长是 Math.pow((int) ((Cnum + 1) / 2), 2)
+//    偶数是负数，可能需要调整正负
     int findKey(int key) {
         int CurrentPos, NewPos;
         int Cnum = 0;
@@ -394,4 +386,10 @@ class SperatorChaining{
     private  int Hash(int key){
         throw  new NotImplementedException();
     }
+}
+
+
+//3. 使用示例， 统计一个文档中，出现的单词，和单词出现的次数
+class HashTableUsingCase{
+
 }
