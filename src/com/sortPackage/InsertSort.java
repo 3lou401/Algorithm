@@ -15,9 +15,10 @@ class SimpleInsertSort<T extends Comparable<T>>{
     public void sort(T[] a){
         int N = a.length;
         for (int i = 0; i< N-1;i++){
-            T key = a[i+1];
             int j = i +1;
-            for ( ; j >0 && key.compareTo(a[j]) < 0 ;j--){
+            T key = a[j];
+            //TODO 易错点 ： 比较的是 j-1 开始的，千万别是j
+            for ( ; j >0 && key.compareTo(a[j-1]) < 0 ;j--){
                     a[j] = a[j-1];
             }
             a[j] = key;

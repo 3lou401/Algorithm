@@ -1,5 +1,7 @@
 package com.sortPackage;
 
+import java.util.Arrays;
+
 /**
  * @Author: leaderHoo
  * @Date: 2019/12/30 00:03
@@ -14,7 +16,7 @@ package com.sortPackage;
  *  归并排序，时间复杂度是O(NlogN), 比较N次，递归logN次
  *      虽然时间复杂度不高，但是经常的开辟空间和数组间的copy也是很耗时，常用语外部排序
  */
-public class MergeSort<T extends  Comparable<T>> {
+public class MergeSort<T extends  Comparable<T >> {
     public void sort(T[] arr){
         T [] temp = (T[]) new Object[arr.length];
         mergeSort(arr,temp,0,arr.length-1);
@@ -25,12 +27,12 @@ public class MergeSort<T extends  Comparable<T>> {
             int center = (right+left)/2;
             mergeSort(arr,temp,left,center);
             mergeSort(arr,temp,center + 1,right);
-            merge(arr,temp,left,center,right); // 合并这两段数据
+            merge(arr,temp,left,center+1,right); // 合并这两段数据
         }
     }
     public void merge(T[] arr, T [] temp, int left,int center,int right){
 //        T [] temp = (T[]) new Object[arr.length]; //每次合并都new数组，太耗费时间内存了
-        int i= left,j = center,k=0;
+        int i= left,j = center,k=left;
         while (i < center && j  <= right){
             if (arr[i].compareTo(arr[j]) > 0){
                 temp[k++] = arr[j++];
@@ -45,8 +47,15 @@ public class MergeSort<T extends  Comparable<T>> {
             temp[k++] = arr[j++];
         }
         //temp copy回 arr
-        for (int m = 0; m < temp.length;m++){
-            arr[m] = temp[m];
+        int numAdd = right - left +1;
+        for (int m = 0; m < numAdd;m++,right--){
+            arr[right] = temp[right];
         }
+    }
+
+    public static void main(String[] args) {
+        String[] a = {"3","1","7","4","5"};
+        new  MergeSort<String>().sort(a);
+        System.out.printf("--"+ Arrays.toString(a));
     }
 }

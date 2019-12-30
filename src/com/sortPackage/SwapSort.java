@@ -38,6 +38,9 @@ class BubbleSort<T extends Comparable<T>>{
 }
 
 //快速排序 ： 指针交换的方式 实现快速排序
+//TODO 特别特别特别 容易失误的地方， 基准元素放在left时，一定是右侧哨兵先动
+// 原因 ： 如果左侧哨兵先动， 走到一个大于大于基准元素的地方停止，（万一右侧也是到这个节点），
+// 循环结束，在交换基准元素和哨兵指向元素后，会发现结果不对，左边有比基准元素大的
 class QuickSort<T extends Comparable<T>>{
     public void swap(T[] a ,int i, int j){
         T temp = a[i];
