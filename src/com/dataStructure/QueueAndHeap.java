@@ -96,11 +96,10 @@ class MaxHeap<T extends Comparable<T>>{
 
 }
 
-//大根堆的建立
-//  给定一个数组， 创建成大根堆
+//大根堆的建立 ： 常用方法， 从最后一个节点的父节点开始，反复调整堆（下滤）
 class MaxHeapUseCase{
 
-    //思路1 ：一个个插入 , 时间复杂度是O(NlogN)
+    //思路1 ：一个个插入 , 时间复杂度是O(NlogN), 不常用
     public  MaxHeap<Integer> create1(int [] a){
         if (a == null || a.length < 1)
             return null;
