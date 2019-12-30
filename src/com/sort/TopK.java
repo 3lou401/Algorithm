@@ -6,15 +6,18 @@ import java.util.Scanner;
 /**
  * @Author: leaderHoo
  * @Date: 2019/4/2 15:45
- * @desc : 从五十个数中，找出前10个最大数
+ * @desc : 从N个数中查找，前K个数
+ *
+ *思路：
+ *      先维护一个K个数的小根堆。
+ *      每读入一个数，和堆顶元素比较，只要大于堆顶元素，就替换
  */
 public class TopK {
 
-//    public void sort(int[] a)
-
+//    从五十个数中，找出前10个最大数
     public static void main(String[] args) {
 
-        int size = 15; //从50个数中取前10
+        int size = 50; //从50个数中取前10
         int key = 10;
 
         int [] a = new int[key];
