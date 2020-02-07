@@ -18,7 +18,7 @@ import java.util.Arrays;
  */
 public class MergeSort<T extends  Comparable<T >> {
     public void sort(T[] arr){
-        T [] temp = (T[]) new Object[arr.length];
+        T [] temp = (T[]) new Object[arr.length]; //TODO ERROR 报错
         mergeSort(arr,temp,0,arr.length-1);
     }
     //temp只是为了只new一次临时数组
