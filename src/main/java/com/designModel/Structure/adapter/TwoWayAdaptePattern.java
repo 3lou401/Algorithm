@@ -8,8 +8,8 @@ package com.designModel.Structure.adapter;
 public class TwoWayAdaptePattern {
     public static void main(String[] args) {
 
-        IAdaptee adaptee = new AdapterTw();
         System.out.printf("target通过适配器访问...\n");
+        IAdaptee adaptee = new AdapterTw();
         ITarget target  = new TwoWayAdapter(adaptee);
         target.request();
 
