@@ -26,13 +26,11 @@ class SubSystem1 {
         System.out.printf("子系统3的方法\n");
     }
 }
-
 // 门面角色
 class Facade{
     private SubSystem1 subSystem1 = new SubSystem1();
     private SubSystem2 subSystem2 = new SubSystem2();
     private SubSystem3 subSystem3 = new SubSystem3();
-
 
     //客户端实际访问的接口
     public  void method(){

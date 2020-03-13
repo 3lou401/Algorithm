@@ -11,8 +11,13 @@ package com.designModel.Structure.bridge;
 public class PackageInfo {
     public static void main(String[] args) {
         Implementor concreteA = new ConcreteImplA();
+        Implementor concreteB = new ConcreteImplB();
+
         AbstractObj refinedObj = new RefinedObj(concreteA);
         refinedObj.oper();
+        AbstractObj refinedObj1 = new RefinedObj(concreteB);
+        refinedObj1.oper();
+
     }
 }
 
@@ -24,6 +29,13 @@ class ConcreteImplA implements Implementor{
     @Override
     public void oper() {
         System.out.printf("具体实现角色A...\n");
+    }
+}
+class ConcreteImplB implements Implementor{
+
+    @Override
+    public void oper() {
+        System.out.printf("具体实现角色B...\n");
     }
 }
 
@@ -45,6 +57,27 @@ class RefinedObj extends AbstractObj{
     @Override
     void oper() {
         System.out.printf("修订的抽象者角色....\n");
+       impl.oper();
+    }
+}
+class RefinedObj2 extends AbstractObj{
+    public RefinedObj2(Implementor impl) {
+        super(impl);
+    }
+
+    @Override
+    void oper() {
+        System.out.printf("修订的抽象者角色2....\n");
+       impl.oper();
+    }
+}class RefinedObj3 extends AbstractObj{
+    public RefinedObj3(Implementor impl) {
+        super(impl);
+    }
+
+    @Override
+    void oper() {
+        System.out.printf("修订的抽象者角色3....\n");
        impl.oper();
     }
 }

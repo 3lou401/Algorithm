@@ -9,7 +9,7 @@ import java.util.HashMap;
  *                   将相似的部分共享，
  *                   角色 ； 具体享元角色 & 不可共享角色 & 抽象享元角色 & 享元工厂
  */
-public class PackageInfo {
+public class    PackageInfo {
     public static void main(String[] args) {
         FlyWeight f1 = new FlyWeightFactory().getFlyWeight("color");
         UnSupportPart unSupportPart = new UnSupportPart("13排左2");
@@ -22,15 +22,12 @@ interface  FlyWeight{
 }
 class UnSupportPart{
     private  String info;
-
     public UnSupportPart(String info) {
         this.info = info;
     }
-
     public void setInfo(String info) {
         this.info = info;
     }
-
     public String getInfo() {
         return info;
     }
@@ -38,11 +35,9 @@ class UnSupportPart{
 
 class ConcreteFlyWeight1 implements FlyWeight{
     private  String key;
-
     public ConcreteFlyWeight1(String key) {
         this.key = key;
     }
-
     @Override
     public void oper(UnSupportPart unSupportPart) {
         System.out.printf("可以共享的是: "+key+"\n");
@@ -58,8 +53,6 @@ class FlyWeightFactory {
         if (flyWeight == null){
             flyWeight = new ConcreteFlyWeight1(key);
             maps.put(key,flyWeight);
-        } else {
-            System.out.printf("享元已经存在，"+key+" 被捕获\n");
         }
         return flyWeight;
     }

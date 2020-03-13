@@ -15,14 +15,14 @@ public class PackageInfo {
     public static void main(String[] args) {
         Component component = new ConcreteComponent();
         Component decorator = new ConcreteDecorator(component);
-        decorator.oper();
+        Component decorator1 = new ConcreteDecorator2(decorator);
+        decorator1.oper();
     }
 }
 interface  Component{
     public void oper();
 }
 class ConcreteComponent implements Component{
-
     @Override
     public void oper() {
         System.out.printf("这是具体的构件。。。\n");
@@ -30,20 +30,15 @@ class ConcreteComponent implements Component{
 }
 abstract class Decorator implements Component{
     protected Component component;
-
     public Decorator(Component component) {
         this.component = component;
     }
-
     public abstract void oper() ;
   }
-
   class ConcreteDecorator extends Decorator{
-
       public ConcreteDecorator(Component component) {
           super(component);
       }
-
       @Override
       public void oper() {
         component.oper();
@@ -51,5 +46,19 @@ abstract class Decorator implements Component{
       }
       public  void addedFunc(){
           System.out.printf("扩展的功能...\n");
+      }
+  }
+  class ConcreteDecorator2 extends Decorator{
+      public ConcreteDecorator2(Component component) {
+          super(component);
+      }
+
+      @Override
+      public void oper() {
+          component.oper();
+          addedFunc();
+      }
+      public  void addedFunc(){
+          System.out.printf("新扩展的功能...\n");
       }
   }

@@ -56,19 +56,17 @@ abstract  class Component {
 
 class Leaf extends Component {
     private  String name;
-
     public Leaf(String name) {
         this.name = name;
     }
-
     @Override
     void oper() {
         System.out.printf("正在访问树叶构件 "+name+"\n");
     }
 }
+
 class Composite extends Component{
     private List<Component> components = new ArrayList<>();
-
     public void add(Component component){
         components.add(component);
     }
@@ -78,7 +76,6 @@ class Composite extends Component{
     public Component getChild(int index){
         return components.get(index);
     }
-
     @Override
     void oper() {
         //遍历其拥有的树叶
