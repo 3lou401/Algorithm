@@ -137,7 +137,6 @@ class KeyGenerator5{
     private static HashMap keyGens = new HashMap(10);
 
     private final int pool_size = 20;
-
     private KeyInfo keyInfo;
 
     private KeyGenerator5(){}
@@ -151,10 +150,10 @@ class KeyGenerator5{
             keyGenerator5 = (KeyGenerator5) keyGens.get(name);
         }else {
             keyGenerator5 = new KeyGenerator5(name);
+            keyGens.put(name,keyGenerator5);
         }
         return keyGenerator5;
     }
-    //备注 ：第一次添加单例对象时，一定是初始化了keyinfo,所以 直接取的时候，对应的单例对象中一定有keyinfo对象实例
     public synchronized  int getNextKey(){
         return keyInfo.getNextKey();
     }

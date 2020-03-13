@@ -1,8 +1,8 @@
-package com.JVM;
+package com.concurrent.pattern;
 
 /**
  * @Author: leaderHoo
- * @Date: 2020/2/14 0:00
+ * @Date: 2020/2/20 14:27
  * @Desc:
  */
 public class a {
